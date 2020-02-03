@@ -39,13 +39,6 @@ CachePageSchema.pre('save', function (next) {
 
 });
 
-CachePageSchema.index({'website_public_key': 1, 'page_id': 1, 'offset': 1, 'limit': 1, 'sort': 1}, {
-  name: 'website_username_1',
-  unique: true,
-  background: true,
-  dropDups: true
-});
-
 
 CachePageSchema.static.cachePageRequest = function(page_id, website_public_key, limit, offset, sort) {
 
