@@ -17,7 +17,7 @@ module.exports = function (app) {
   const options = {
     autoIndex: true, // Don't build indexes
     useNewUrlParser: true,
-    poolSize: 400, // Maintain up to 10 socket connection
+    poolSize: 20, // Maintain up to 10 socket connection
     bufferMaxEntries: 0,
     connectTimeoutMS: 200000, // Give up initial connection after 10 seconds
     socketTimeoutMS: 300000, // Close sockets after 45 seconds of inactivity
