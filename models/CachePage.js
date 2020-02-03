@@ -1,8 +1,8 @@
-'use strict';
+'use strict'
 
-let mongoose = require('mongoose');
-let Schema = mongoose.Schema;
-const Q = require('q');
+let mongoose = require('mongoose')
+let Schema = mongoose.Schema
+const Q = require('q')
 
 let CachePageSchema = new Schema({
 
@@ -24,25 +24,25 @@ let CachePageSchema = new Schema({
 
   updated_at: {type: Date, default: Date.now}
 
-});
+})
 
 CachePageSchema.pre('save', function (next) {
 
   if (this.isNew) {
     // first time the object is created
-    return next();
+    return next()
   }
 
-  this.updated_at = Date.now();
+  this.updated_at = Date.now()
 
-  return next();
+  return next()
 
-});
+})
 
 
 CachePageSchema.static.cachePageRequest = function(page_id, website_public_key, limit, offset, sort) {
 
-  let cacheRequestDeferred = Q.defer();
+  let cacheRequestDeferred = Q.defer()
 
   this.findOne({
     page_id: page_id,
@@ -52,19 +52,19 @@ CachePageSchema.static.cachePageRequest = function(page_id, website_public_key, 
     sort: sort
   }, function (err, cachePage) {
 
-    if (err) cacheRequestDeferred.reject(err);
+    if (err) cacheRequestDeferred.reject(err)
 
     if (cachePage) {
-      cacheRequestDeferred.resolve(cachePage);
+      cacheRequestDeferred.resolve(cachePage)
     } else {
-      cacheRequestDeferred.resolve({cache: 'to_generate'});
+      cacheRequestDeferred.resolve({cache: 'to_generate'})
     }
-  });
-};
+  })
+}
 
 CachePageSchema.static.cachePageUpdateOrCreate = function(page_id, website_public_key, limit, offset, sort, content) {
 
-  let cacheRequestDeferred = Q.defer();
+  let cacheRequestDeferred = Q.defer()
 
   this.findOneAndUpdate({
     page_id: page_id,
@@ -87,16 +87,12 @@ CachePageSchema.static.cachePageUpdateOrCreate = function(page_id, website_publi
       setDefaultsOnInsert: true},function (err, cachePage) {
 
     if (err) {
-      cacheRequestDeferred.reject(err);
+      cacheRequestDeferred.reject(err)
     } else {
-      cacheRequestDeferred.resolve(cachePage);
+      cacheRequestDeferred.resolve(cachePage)
     }
 
-  });
-};
+  })
+}
 
-let CachePage = mongoose.model('CachePage', CachePageSchema); // jshint ignore:line
-
-module.exports = function () {
-  return CachePage;
-};
+module.exports = mongoose.model('CachePage', CachePageSchema)
