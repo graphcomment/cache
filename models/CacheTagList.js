@@ -12,9 +12,7 @@ let CacheTagListSchema = new Schema({
 
   valid: {type: Boolean, default: true, required: true},
 
-  offset : {type: Number},
-
-  limit: {type: Number},
+  page : {type: Number},
 
   created_at: {type: Date, default: Date.now},
 
@@ -35,22 +33,21 @@ CacheTagListSchema.pre('save', function (next) {
 
 });
 
-CacheTagListSchema.index({'website_public_key': 1, 'offset': 1, 'limit':1}, {
-  name: 'website_public_key_offset_limit',
+CacheTagListSchema.index({'website_public_key': 1, 'page': 1}, {
+  name: 'website_public_key_page',
   unique: true,
   background: true,
   dropDups: true
 });
 
 
-CacheTagListSchema.statics.cacheTagListRequest = function(website_public_key, offset, limit) {
+CacheTagListSchema.statics.cacheTagListRequest = function(website_public_key, page) {
 
   let cacheRequestDeferred = Q.defer();
 
   this.findOne({
     website_public_key: website_public_key,
-    offset: offset,
-    limit: limit
+    page: page
   }, function (err, cachePage) {
 
     if (err) cacheRequestDeferred.reject(err);
@@ -65,18 +62,16 @@ CacheTagListSchema.statics.cacheTagListRequest = function(website_public_key, of
   return cacheRequestDeferred.promise;
 };
 
-CacheTagListSchema.statics.cacheTagListUpdateOrCreate = function(website_public_key, offset, limit, content) {
+CacheTagListSchema.statics.cacheTagListUpdateOrCreate = function(website_public_key, page, content) {
 
   let cacheRequestDeferred = Q.defer();
 
   this.findOneAndUpdate({
       website_public_key: website_public_key,
-      offset: offset,
-      limit: limit
+      page: page
     }, {
       website_public_key: website_public_key,
-      offset: offset,
-      limit: limit,
+      page: page,
       content: content,
       valid: true
     },
