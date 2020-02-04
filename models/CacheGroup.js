@@ -2,6 +2,7 @@
 
 let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
+const Q = require('q')
 
 let CacheGroupSchema = new Schema({
 
