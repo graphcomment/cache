@@ -55,24 +55,26 @@ function update(type, websiteId, params, content) {
   return collections[type].updateOrCreate(websiteId, params, content)
 }
 
-function get(type, websiteId, params, generate) {
+function get(type, websiteId, params, generate, res) {
   const deferred = Q.defer()
 
-  if (isDebug) console.log(`[cache ${type}] test`)
-
-  exists(type, websiteId, params).then(cached => {
-    if (cached && cached.valid && !isDisabled) {
-      if (isDebug) console.log(`[cache ${type}] found`)
-      deferred.resolve(cached.content)
-    }
-    else {
-      if (isDebug) console.log(`[cache ${type}] generate`)
-      generate().then(content => {
-        update(type, websiteId, params, content)
-        deferred.resolve(content)
-      })
-    }
-  })
+  exists(type, websiteId, params).then(
+    cached => {
+      if (cached && cached.valid && !isDisabled) {
+        if (isDebug) console.log(`[cache ${type}] found ${JSON.stringify(params)}`)
+        res.append('Last-Modified', (new Date(cached.updated_at)).toUTCString())
+        res.send(cached.content)
+      }
+      else {
+        if (isDebug) console.log(`[cache ${type}] generate ${JSON.stringify(params)}`)
+        generate().then(content => {
+          update(type, websiteId, params, content).catch(err => console.error('[gc cache]', err))
+          res.send(content)
+        })
+      }
+    },
+    err => console.error('[gc cache]', err)
+  )
 
   return deferred.promise
 }
