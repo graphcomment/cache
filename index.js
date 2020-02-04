@@ -4,11 +4,13 @@ const Q = require('q')
 const CachePage = require('./models/CachePage')
 const CachePageList = require('./models/CachePageList')
 const CacheTagList = require('./models/CacheTagList')
+const CacheProfile = require('./models/CacheProfile')
 
 const collections = {
   'page': CachePage,
   'pages': CachePageList,
   'tags': CacheTagList,
+  'profile' : CacheProfile,
 }
 
 let isDebug
