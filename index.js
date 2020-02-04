@@ -5,7 +5,7 @@ const Q = require('q')
 function start(mongoDsn, debug) {
 
   const options = {
-    autoIndex: true, // Don't build indexes
+    autoIndex: false, // Don't build indexes
     useNewUrlParser: true,
     poolSize: 20, // Maintain up to 10 socket connection
     bufferMaxEntries: 0,
