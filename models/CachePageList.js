@@ -6,7 +6,7 @@ const Q = require('q');
 
 let CachePageListSchema = new Schema({
 
-  website_public_key: {type: String},
+  website_public_key: {type: String, required: true},
 
   tag_name: {type: String},
 

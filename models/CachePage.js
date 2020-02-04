@@ -6,9 +6,9 @@ const Q = require('q')
 
 let CachePageSchema = new Schema({
 
-  page_id: {type: String},
+  page_id: {type: String, required: true},
 
-  website_public_key: {type: String},
+  website_public_key: {type: String, required: true},
 
   content: {type: Schema.Types.Mixed, required: true},
 
