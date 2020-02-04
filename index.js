@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
-const CachePage = require('models/CachePage')
-const { Types: { ObjectId } } = mongoose
+const CachePage = require('./models/CachePage')
+const Q = require('q')
 
-module.exports.start = function(mongoDsn, debug) {
+function start(mongoDsn, debug) {
 
   const options = {
     autoIndex: true, // Don't build indexes
@@ -21,7 +21,35 @@ module.exports.start = function(mongoDsn, debug) {
     mongoose.set('debug', debug)
 
     const mongoDB = mongoose.connect(mongoDsn, options)
-      .then(() => console.log('Successfully connected to database'))
-      .catch((err) => console.log('Error when connecting to db\n\r' + err))
+      .then(() => console.log('connected to mongo'))
+      .catch((err) => console.log('error connecting to mongo\n\r' + err))
   })
 }
+
+function test(type, websiteId, params) {
+  return CachePage.cachePageRequest(websiteId, params)
+}
+
+function update(type, websiteId, params, content) {
+  return CachePage.cachePageUpdateOrCreate(websiteId, params, content)
+}
+
+function get(type, websiteId, params, generate) {
+  const deferred = Q.defer()
+
+  test(type, websiteId, params).then(cached => {
+    if (cached && cached.valid) {
+      deferred.resolve(cached.content)
+    }
+    else {
+      generate().then(content => {
+        update(type, websiteId, params, content)
+        deferred.resolve(content)
+      })
+    }
+  })
+
+  return deferred.promise
+}
+
+module.exports = { start, test, update, get }
