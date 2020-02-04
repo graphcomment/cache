@@ -1,8 +1,25 @@
 const mongoose = require('mongoose')
-const CachePage = require('./models/CachePage')
 const Q = require('q')
 
-function start(mongoDsn, debug) {
+const CachePage = require('./models/CachePage')
+const CachePageList = require('./models/CachePageList')
+const CacheTagList = require('./models/CacheTagList')
+
+const collections = {
+  'page': CachePage,
+  'pages': CachePageList,
+  'tags': CacheTagList,
+}
+
+let isDebug
+let isDisabled
+
+function start(mongoDsn, debug, disabled) {
+
+  isDebug = debug
+  isDisabled = disabled
+
+  //mongoose.set('debug', debug)
 
   const options = {
     autoIndex: false, // Don't build indexes
@@ -18,30 +35,32 @@ function start(mongoDsn, debug) {
   }
 
   setTimeout(function () {
-    mongoose.set('debug', debug)
-
     const mongoDB = mongoose.connect(mongoDsn, options)
       .then(() => console.log('connected to mongo'))
       .catch((err) => console.log('error connecting to mongo\n\r' + err))
   })
 }
 
-function test(type, websiteId, params) {
-  return CachePage.cachePageRequest(websiteId, params)
+function exists(type, websiteId, params) {
+  return collections[type].exists(websiteId, params)
 }
 
 function update(type, websiteId, params, content) {
-  return CachePage.cachePageUpdateOrCreate(websiteId, params, content)
+  return collections[type].updateOrCreate(websiteId, params, content)
 }
 
 function get(type, websiteId, params, generate) {
   const deferred = Q.defer()
 
-  test(type, websiteId, params).then(cached => {
-    if (cached && cached.valid) {
+  if (isDebug) console.log(`[cache ${type}] test`)
+
+  exists(type, websiteId, params).then(cached => {
+    if (cached && cached.valid && !isDisabled) {
+      if (isDebug) console.log(`[cache ${type}] found`)
       deferred.resolve(cached.content)
     }
     else {
+      if (isDebug) console.log(`[cache ${type}] generate`)
       generate().then(content => {
         update(type, websiteId, params, content)
         deferred.resolve(content)
@@ -52,4 +71,4 @@ function get(type, websiteId, params, generate) {
   return deferred.promise
 }
 
-module.exports = { start, test, update, get }
+module.exports = { start, exists, update, get }

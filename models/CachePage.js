@@ -36,7 +36,7 @@ CachePageSchema.pre('save', function (next) {
 })
 
 
-CachePageSchema.statics.cachePageRequest = function(website_public_key, params) {
+CachePageSchema.statics.exists = function(website_public_key, params) {
 
   let cacheRequestDeferred = Q.defer()
 
@@ -58,7 +58,7 @@ CachePageSchema.statics.cachePageRequest = function(website_public_key, params) 
   return cacheRequestDeferred.promise
 }
 
-CachePageSchema.statics.cachePageUpdateOrCreate = function(website_public_key, params, content) {
+CachePageSchema.statics.updateOrCreate = function(website_public_key, params, content) {
 
   let cacheRequestDeferred = Q.defer()
 
@@ -96,4 +96,3 @@ CachePageSchema.index({'website_public_key': 1, 'page_id': 1, 'sort': 1}, {
 });
 
 module.exports = mongoose.model('CachePage', CachePageSchema)
-//module.exports = CachePageSchema

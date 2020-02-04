@@ -43,7 +43,7 @@ CacheTagListSchema.index({'website_public_key': 1, 'offset': 1, 'limit':1}, {
 });
 
 
-CacheTagListSchema.statics.cacheTagListRequest = function(website_public_key, offset, limit) {
+CacheTagListSchema.statics.exists = function(website_public_key, offset, limit) {
 
   let cacheRequestDeferred = Q.defer();
 
@@ -65,7 +65,7 @@ CacheTagListSchema.statics.cacheTagListRequest = function(website_public_key, of
   return cacheRequestDeferred.promise;
 };
 
-CacheTagListSchema.statics.cacheTagListUpdateOrCreate = function(website_public_key, offset, limit, content) {
+CacheTagListSchema.statics.updateOrCreate = function(website_public_key, offset, limit, content) {
 
   let cacheRequestDeferred = Q.defer();
 
@@ -95,8 +95,4 @@ CacheTagListSchema.statics.cacheTagListUpdateOrCreate = function(website_public_
   return cacheRequestDeferred.promise;
 };
 
-let CacheTagList = mongoose.model('CacheTagList', CacheTagListSchema); // jshint ignore:line
-
-module.exports = function () {
-  return CacheTagList;
-};
+module.exports = mongoose.model('CacheTagList', CacheTagListSchema); // jshint ignore:line

@@ -14,9 +14,7 @@ let CachePageListSchema = new Schema({
 
   valid: {type: Boolean, default: true, required: true},
 
-  offset : {type: Number},
-
-  limit: {type: Number},
+  page: {type: Number},
 
   sort: {type: String, required: true},
 
@@ -39,24 +37,23 @@ CachePageListSchema.pre('save', function (next) {
 
 });
 
-CachePageListSchema.index({'website_public_key': 1, 'tag_name': 1, 'offset': 1, 'limit':1, 'sort': 1}, {
-  name: 'website_public_key_offset_limit_sort',
+CachePageListSchema.index({'website_public_key': 1, 'tag_name': 1, 'page': 1, 'sort': 1}, {
+  name: 'website_public_key_page_sort',
   unique: true,
   background: true,
   dropDups: true
 });
 
 
-CachePageListSchema.statics.cachePageListRequest = function(website_public_key, tag_name, offset, limit, sort) {
+CachePageListSchema.statics.exists = function(website_public_key, params) {
 
   let cacheRequestDeferred = Q.defer();
 
   this.findOne({
     website_public_key: website_public_key,
-    tag_name: tag_name,
-    offset: offset,
-    limit: limit,
-    sort: sort
+    tag_name: params.tag,
+    page: params.page,
+    sort: params.sort,
   }, function (err, cachePage) {
 
     if (err) cacheRequestDeferred.reject(err);
@@ -71,22 +68,20 @@ CachePageListSchema.statics.cachePageListRequest = function(website_public_key, 
   return cacheRequestDeferred.promise;
 };
 
-CachePageListSchema.statics.cachePageListUpdateOrCreate = function(website_public_key, tag_name, offset, limit, sort, content) {
+CachePageListSchema.statics.updateOrCreate = function(website_public_key, params, content) {
 
   let cacheRequestDeferred = Q.defer();
 
   this.findOneAndUpdate({
       website_public_key: website_public_key,
-      tag_name: tag_name,
-      offset: offset,
-      limit: limit,
-      sort: sort
+      tag_name: params.tag,
+      page: params.page,
+      sort: params.sort,
     }, {
       website_public_key: website_public_key,
-      tag_name: tag_name,
-      offset: offset,
-      limit: limit,
-      sort: sort,
+      tag_name: params.tag,
+      page: params.page,
+      sort: params.sort,
       content: content,
       valid: true
     },
@@ -105,8 +100,4 @@ CachePageListSchema.statics.cachePageListUpdateOrCreate = function(website_publi
   return cacheRequestDeferred.promise;
 };
 
-let CachePageList = mongoose.model('CachePageList', CachePageListSchema); // jshint ignore:line
-
-module.exports = function () {
-  return CachePageList;
-};
+module.exports = mongoose.model('CachePageList', CachePageListSchema); // jshint ignore:line
