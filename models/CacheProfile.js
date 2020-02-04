@@ -90,8 +90,4 @@ CacheProfileSchema.statics.updateOrCreate = function(website_public_key, params,
   return cacheRequestDeferred.promise;
 };
 
-let CacheProfile = mongoose.model('CacheProfile', CacheProfileSchema); // jshint ignore:line
-
-module.exports = function () {
-  return CacheProfile;
-};
+module.exports = mongoose.model('CacheProfile', CacheProfileSchema); // jshint ignore:line
