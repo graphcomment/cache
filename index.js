@@ -5,12 +5,16 @@ const CachePage = require('./models/CachePage')
 const CachePageList = require('./models/CachePageList')
 const CacheTagList = require('./models/CacheTagList')
 const CacheProfile = require('./models/CacheProfile')
+const CacheGroup = require('./models/CacheGroup')
+const CacheGroupList = require('./models/CacheGroupList')
 
 const collections = {
   'page': CachePage,
   'pages': CachePageList,
   'tags': CacheTagList,
   'profile' : CacheProfile,
+  'group' : CacheGroup,
+  'groups' : CacheGroupList
 }
 
 let isDebug

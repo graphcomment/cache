@@ -2,25 +2,26 @@
 
 let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
-const Q = require('q');
 
-let CacheProfileSchema = new Schema({
+let CacheGroupListSchema = new Schema({
 
   website_public_key: {type: String, required: true},
-
-  pseudo : {type: String, required: true},
 
   content: {type: Schema.Types.Mixed, required: true},
 
   valid: {type: Boolean, default: true, required: true},
 
+  page : {type: Number},
+
+  sort: {type: String, required: true},
+
   created_at: {type: Date, default: Date.now},
 
-  updated_at: {type: Date, default: Date.now, expires: 3600}
+  updated_at: {type: Date, default: Date.now, expires: 172800}
 
 });
 
-CacheProfileSchema.pre('save', function (next) {
+CacheGroupListSchema.pre('save', function (next) {
 
   if (this.isNew) {
     // first time the object is created
@@ -33,21 +34,22 @@ CacheProfileSchema.pre('save', function (next) {
 
 });
 
-CacheProfileSchema.index({'website_public_key': 1, 'pseudo': 1}, {
-  name: 'website_public_key_pseudo',
+CacheGroupListSchema.index({'website_public_key': 1, 'page': 1, 'sort': 1}, {
+  name: 'website_public_key_page_sort',
   unique: true,
   background: true,
   dropDups: true
 });
 
 
-CacheProfileSchema.statics.exists = function(website_public_key, params) {
+CacheGroupListSchema.statics.exists = function(website_public_key, params) {
 
   let cacheRequestDeferred = Q.defer();
 
   this.findOne({
     website_public_key: website_public_key,
-    pseudo: params.pseudo
+    page: params.page,
+    sort: params.sort
   }, function (err, cachePage) {
 
     if (err) cacheRequestDeferred.reject(err);
@@ -62,16 +64,18 @@ CacheProfileSchema.statics.exists = function(website_public_key, params) {
   return cacheRequestDeferred.promise;
 };
 
-CacheProfileSchema.statics.updateOrCreate = function(website_public_key, params, content) {
+CacheGroupListSchema.statics.updateOrCreate = function(website_public_key, params, content) {
 
   let cacheRequestDeferred = Q.defer();
 
   this.findOneAndUpdate({
       website_public_key: website_public_key,
-      pseudo: params.pseudo
+      page: params.page,
+      sort: params.sort
     }, {
       website_public_key: website_public_key,
-      pseudo: params.pseudo,
+      page: params.page,
+      sort: params.sort,
       content: content,
       valid: true
     },
@@ -90,4 +94,4 @@ CacheProfileSchema.statics.updateOrCreate = function(website_public_key, params,
   return cacheRequestDeferred.promise;
 };
 
-module.exports = mongoose.model('CacheProfile', CacheProfileSchema); // jshint ignore:line
+module.exports = mongoose.model('CacheGroupList', CacheGroupListSchema); // jshint ignore:line
