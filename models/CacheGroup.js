@@ -2,6 +2,7 @@
 
 let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
+const Q = require('q');
 
 let CacheGroupSchema = new Schema({
 
@@ -47,7 +48,6 @@ CacheGroupSchema.statics.exists = function(website_public_key, params) {
   this.findOne({
     website_public_key: website_public_key,
     group_slug: params.group_slug,
-    sort: params.sort
   }, function (err, cachePage) {
 
     if (err) cacheRequestDeferred.reject(err);
@@ -69,11 +69,9 @@ CacheGroupSchema.statics.updateOrCreate = function(website_public_key, params, c
   this.findOneAndUpdate({
       website_public_key: website_public_key,
       group_slug: params.group_slug,
-      sort: params.sort
     }, {
       website_public_key: website_public_key,
       group_slug: params.group_slug,
-      sort: params.sort,
       content: content,
       valid: true
     },

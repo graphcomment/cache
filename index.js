@@ -12,7 +12,7 @@ const collections = {
   'page': CachePage,
   'pages': CachePageList,
   'tags': CacheTagList,
-  'profile' : CacheProfile,
+  'user' : CacheProfile,
   'group' : CacheGroup,
   'groups' : CacheGroupList
 }
