@@ -48,19 +48,22 @@ function start(mongoDsn, debug, disabled) {
 }
 
 function exists(type, websiteId, params) {
+  if (!collections[type]) throw new Error(`[gc cache] model for ${type} not found`)
   return collections[type].exists(websiteId, params)
 }
 
 function update(type, websiteId, params, content) {
+  if (!collections[type]) throw new Error(`[gc cache] model for ${type} not found`)
   return collections[type].updateOrCreate(websiteId, params, content)
 }
 
 function get(type, websiteId, params, generate, res) {
-  const deferred = Q.defer()
-
   exists(type, websiteId, params).then(
     cached => {
-      if (cached && cached.valid && !isDisabled) {
+      if (isDisabled) {
+        generate().then(content => res.send(content))
+      }
+      else if (cached && cached.valid) {
         if (isDebug) console.log(`[cache ${type}] found ${JSON.stringify(params)}`)
         res.append('Last-Modified', (new Date(cached.updated_at)).toUTCString())
         res.send(cached.content)
@@ -75,8 +78,6 @@ function get(type, websiteId, params, generate, res) {
     },
     err => console.error('[gc cache]', err)
   )
-
-  return deferred.promise
 }
 
 module.exports = { start, exists, update, get }
