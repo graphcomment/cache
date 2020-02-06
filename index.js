@@ -20,7 +20,11 @@ const collections = {
 let isDebug
 let isDisabled
 
-function start(mongoDsn, debug, disabled) {
+function start({
+  mongoDsn,
+  debug,
+  disabled
+}) {
 
   isDebug = debug
   isDisabled = disabled
