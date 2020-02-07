@@ -61,6 +61,20 @@ function update(type, websiteId, params, content) {
   return collections[type].updateOrCreate(websiteId, params, content)
 }
 
+function remove(type) {
+  if (!collections[type]) throw new Error(`[gc cache] model for ${type} not found`)
+  return collections[type].deleteAll().then(
+    result => console.log(`[cache ${type}] ${result.deletedCount} results removed`),
+    err => console.log(`[cache ${type}] error`, err),
+  )
+}
+
+function clear(cb) {
+  return Promise.all(
+    Object.keys(collections).map(remove)
+  ).then(cb)
+}
+
 function get(type, websiteId, params, generate, res) {
   exists(type, websiteId, params).then(
     cached => {
@@ -84,4 +98,4 @@ function get(type, websiteId, params, generate, res) {
   )
 }
 
-module.exports = { start, exists, update, get }
+module.exports = { start, exists, update, get, remove, clear }
