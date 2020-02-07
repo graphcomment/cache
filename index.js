@@ -98,4 +98,8 @@ function get(type, websiteId, params, generate, res) {
   )
 }
 
-module.exports = { start, exists, update, get, remove, clear }
+function exit() {
+  mongoose.disconnect()
+}
+
+module.exports = { start, exists, update, get, remove, clear, exit }
