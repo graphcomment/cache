@@ -73,12 +73,29 @@ CacheGroupSchema.statics.updateOrCreate = function(website_public_key, params, c
       website_public_key: website_public_key,
       group_slug: params.group_slug,
       content: content,
-      valid: true
+      valid: true,
+      updated_at: Date.now()
     },
     {
       new: true,
       upsert: true,
       setDefaultsOnInsert: true},function (err, cachePage) {
+
+      if (err) {
+        cacheRequestDeferred.reject(err);
+      } else {
+        cacheRequestDeferred.resolve(cachePage);
+      }
+    });
+
+  return cacheRequestDeferred.promise;
+};
+
+CacheGroupSchema.statics.deleteAll = function() {
+
+  let cacheRequestDeferred = Q.defer();
+
+  this.deleteMany({},function (err, cachePage) {
 
       if (err) {
         cacheRequestDeferred.reject(err);

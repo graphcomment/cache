@@ -73,7 +73,8 @@ CacheProfileSchema.statics.updateOrCreate = function(website_public_key, params,
       website_public_key: website_public_key,
       pseudo: params.pseudo,
       content: content,
-      valid: true
+      valid: true,
+      updated_at: Date.now()
     },
     {
       new: true,
@@ -86,6 +87,22 @@ CacheProfileSchema.statics.updateOrCreate = function(website_public_key, params,
         cacheRequestDeferred.resolve(cachePage);
       }
     });
+
+  return cacheRequestDeferred.promise;
+};
+
+CacheProfileSchema.statics.deleteAll = function() {
+
+  let cacheRequestDeferred = Q.defer();
+
+  this.deleteMany({},function (err, cachePage) {
+
+    if (err) {
+      cacheRequestDeferred.reject(err);
+    } else {
+      cacheRequestDeferred.resolve(cachePage);
+    }
+  });
 
   return cacheRequestDeferred.promise;
 };

@@ -71,7 +71,8 @@ CachePageSchema.statics.updateOrCreate = function(website_public_key, params, co
       page_id: params.pageId,
       sort: params.sort,
       content: content,
-      valid: true
+      valid: true,
+      updated_at: Date.now()
     },
     {
       new: true,
@@ -87,6 +88,22 @@ CachePageSchema.statics.updateOrCreate = function(website_public_key, params, co
 
   return cacheRequestDeferred.promise
 }
+
+CachePageSchema.statics.deleteAll = function() {
+
+  let cacheRequestDeferred = Q.defer();
+
+  this.deleteMany({},function (err, cachePage) {
+
+    if (err) {
+      cacheRequestDeferred.reject(err);
+    } else {
+      cacheRequestDeferred.resolve(cachePage);
+    }
+  });
+
+  return cacheRequestDeferred.promise;
+};
 
 CachePageSchema.index({'website_public_key': 1, 'page_id': 1, 'sort': 1}, {
   name: 'website_public_key_page_id_sort',
