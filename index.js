@@ -46,7 +46,7 @@ function start({
 
   setTimeout(function () {
     const mongoDB = mongoose.connect(mongoDsn, options)
-      .then(() => console.log('connected to mongo'))
+      //.then(() => console.log('connected to mongo'))
       .catch((err) => console.log('error connecting to mongo\n\r' + err))
   })
 }
@@ -89,7 +89,9 @@ function get(type, websiteId, params, generate, res) {
       else {
         if (isDebug) console.log(`[cache ${type}] generate ${JSON.stringify(params)}`)
         generate().then(content => {
-          update(type, websiteId, params, content).catch(err => console.error('[gc cache]', err))
+          if (content.indexOf('data-ignore-caching') === -1) {
+            update(type, websiteId, params, content).catch(err => console.error('[gc cache]', err))
+          }
           res.send(content)
         })
       }
