@@ -75,7 +75,7 @@ function clear(cb) {
   ).then(cb)
 }
 
-function get(type, websiteId, params, generate, res) {
+function get(type, websiteId, params, res, generate) {
   exists(type, websiteId, params).then(
     cached => {
       if (isDisabled) {
